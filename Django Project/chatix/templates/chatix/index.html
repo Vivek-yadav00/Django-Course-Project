@@ -1,0 +1,50 @@
+{% extends 'chatix/base.html' %}
+{% block content %}
+<div class="container mt-5" style="max-width: 700px;">
+    <h2 class="mb-4 text-center" style="color: #cc9900;">Welcome, {{ request.user.username }}</h2>
+
+    <!-- Search form -->
+    <form method="get" action="{% url 'search' %}" class="input-group mb-4 shadow-sm rounded" role="search">
+        <input type="search" name="q" class="form-control border-0"
+            placeholder="Search users by name, username, or email" aria-label="Search users" required
+            style="background: transparent; box-shadow: none; font-size: 1rem;">
+        <button class="btn btn-yellow fw-semibold" type="submit" style="min-width: 100px;">
+            Search
+        </button>
+    </form>
+
+    <!-- Search results -->
+    {% if users %}
+    <h4 class="mb-3" style="color: #cc9900;">Search Results:</h4>
+    <ul class="list-group shadow-sm rounded mb-4">
+        {% for user in users %}
+        <li class="list-group-item d-flex justify-content-between align-items-center"
+            style="font-weight: 500; color: #444;">
+            {{ user.username }}
+            <a href="{% url 'add_user_to_chatroom' user.id %}" class="btn btn-sm btn-outline-primary">
+                Start Chat
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% elif query %}
+    <p>No users found for "{{ query }}".</p>
+    {% endif %}
+
+    <h4 class="mb-3" style="color: #cc9900;">Your Chat Rooms:</h4>
+    {% if chatrooms %}
+    <ul class="list-group shadow-sm rounded">
+        {% for room in chatrooms %}
+        <li class="list-group-item" style="font-weight: 500;">
+            <a href="{% url 'chatroom' room.id %}" style="text-decoration: none; color: #444;">
+                {{ room.name }}
+            </a>
+        </li>
+
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No chatrooms yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'gym_app/base.html' %}
+{% block content %}
+
+<h1 style="text-align: center; color: #2c3e50;">
+    {% if show_expired %}
+        Expired Members
+    {% else %}
+        All Members
+    {% endif %}
+</h1>
+
+<div style="text-align: center; margin-bottom: 20px;">
+    <a href="{% url 'adding' %}" style="padding: 6px 12px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; margin-right: 10px;">Add Members</a>
+    
+    <!-- Toggle Button -->
+    <a href="{% url 'index' %}?show={% if show_expired %}all{% else %}expired{% endif %}" style="padding: 6px 12px; background-color: #2ecc71; color: white; text-decoration: none; border-radius: 4px;">
+        Show {% if show_expired %}All Members{% else %}Expired Members{% endif %}
+    </a>
+</div>
+
+
+<table border="1" cellpadding="10" style="margin: auto; border-collapse: collapse; width: 90%; font-family: Arial, sans-serif;">
+    <tr style="background-color: #2980b9; color: rgb(185, 20, 226);">
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Join_Date</th>
+        <th>Expiry_Date</th>
+        <th>Email</th>
+        <th>Contact</th>
+        <th>Actions</th>
+    </tr>
+    {% for i in member %}
+    <tr style="text-align: center;">
+        <td>{{ i.id }}</td>
+        <td>{{ i.name }}</td>
+        <td>{{ i.age }}</td>
+        <td>{{ i.join_date }}</td>
+        <td>{{ i.expiry_date }}</td>
+        <td>{{ i.contact.email }}</td>
+        <td>{{ i.contact.phone }}</td>
+
+        <td><a href="{% url 'delete_member' i.id %}" style="color: red; text-decoration: none;">Delete</a></td>
+    </tr>   
+    {% endfor %}
+</table>
+<br>
+<br>
+<br>
+<div>
+    <a href="{% url 'reminder' %}" class="btn-btn-warning mb-3"  style="padding: 6px 12px; background-color: #fe0000;  color: white; text-decoration: none; border-radius: 10px;">Send Reminder</a>
+</div>
+
+{% endblock %}

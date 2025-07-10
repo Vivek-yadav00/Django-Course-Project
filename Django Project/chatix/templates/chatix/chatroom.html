@@ -1,0 +1,111 @@
+{% extends 'chatix/base.html' %}
+
+{% block title %}{{ room.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 700px;">
+    <h2 class="mb-4 text-center" style="color: #cc9900;">Chat Room: {{ room.name }}</h2>
+
+    <!-- Chat Room Info -->
+    <p class="text-muted text-center mb-4">
+        Created on: {{ room.created_at|date:"M d, Y H:i" }}<br>
+        Participants:
+        {% for participant in room.participants.all %}
+            {{ participant.username }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
+
+    <!-- Messages Display -->
+    <div id="messages" class="mb-4 p-3 rounded" style="background-color: #f8f9fa; height: 300px; overflow-y: auto;">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="mb-2">
+                <strong style="color: #333;">{{ message.sender.username }}</strong>:
+                <span style="color: #555;">{{ message.content }}</span>
+                <small class="text-muted float-end">{{ message.timestamp|date:"M d, H:i" }}</small>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No messages yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Send Message Form -->
+    <form  class="input-group" id="chat-form">
+        {% csrf_token %}
+        <input type="text" id="message_input" name="content" class="form-control" placeholder="Type a message..." required>
+        <button class="btn btn-yellow fw-semibold" type="submit" style="min-width: 100px;">Send</button>
+    </form>
+
+    <a href="{% url 'index' %}" class="btn btn-link mt-4">Back to Chat Rooms</a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const roomId = "{{ room.id }}";
+        const username = "{{ request.user.username }}";
+        const messageDiv = document.getElementById('messages');
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('message_input');
+
+        const url = `ws://${window.location.host}/ws/chat/${roomId}/`;
+        const socket = new WebSocket(url);
+
+        socket.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        socket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            const message = data.message;
+            const sender = data.sender;
+
+            const messageWrapper = document.createElement('div');
+            messageWrapper.classList.add('d-flex', 'mb-4');
+
+            if (sender === username) {
+                messageWrapper.classList.add('justify-content-end');
+            } else {
+                messageWrapper.classList.add('justify-content-start');
+            }
+
+            const messageBox = document.createElement('div');
+            messageBox.classList.add('message-box');
+            messageBox.classList.add(sender === username ? 'message-right' : 'message-left');
+
+            const messageContent = document.createElement('div');
+            messageContent.textContent = message;
+
+            const msgInfo = document.createElement('div');
+            msgInfo.classList.add('msg-info');
+            msgInfo.textContent = `~ ${sender.toLowerCase()}`;
+
+            messageBox.appendChild(messageContent);
+            messageBox.appendChild(msgInfo);
+            messageWrapper.appendChild(messageBox);
+            messageDiv.appendChild(messageWrapper);
+
+            messageDiv.scrollTop = messageDiv.scrollHeight; // auto scroll to latest message
+        };
+
+        socket.onclose = function (e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();  
+            const message = input.value.trim();
+            if (message === '') return;
+
+            const messageData = {
+                'message': message,
+                'sender': username,   
+                'room_id': roomId
+            };
+
+            socket.send(JSON.stringify(messageData));
+            input.value = "";
+        });
+    });
+</script>
+{% endblock %}
