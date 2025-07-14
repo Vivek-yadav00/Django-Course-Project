@@ -83,7 +83,7 @@ DATABASES = {
     }
 }
 
-LOGIN_URL = '/login/'
+LOGIN_URL = '/gym_info/login/'
 LOGIN_REDIRECT_URL='/gym_info'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

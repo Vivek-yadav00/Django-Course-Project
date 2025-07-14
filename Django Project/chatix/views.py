@@ -6,6 +6,7 @@ from .models import UserInfo, ChatRoom , Message
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponseForbidden
 
 # Create your views here.
 
@@ -103,3 +104,26 @@ def add_user_to_chatroom(request, user_id):
         chatroom.save()
 
     return redirect('chatroom',id=chatroom.id)
+
+@login_required
+def delete_chatroom(request, room_id):
+    room = get_object_or_404(ChatRoom, id=room_id)
+    
+    # Optional: Only allow delete if user is a participant or admin
+    if request.user in room.participants.all() or request.user.is_superuser:
+        room.delete()
+        return redirect('index')  # Or wherever you want to redirect
+    else:
+        return HttpResponseForbidden("You are not allowed to delete this room.")
+    
+@login_required
+def delete_message(request, message_id):
+    message = get_object_or_404(Message, id=message_id)
+    
+    # Only allow sender or admin to delete
+    if request.user == message.sender or request.user.is_superuser:
+        room_id = message.room.id
+        message.delete()
+        return redirect('chatroom', room_id=room_id)
+    else:
+        return HttpResponseForbidden("You are not allowed to delete this message.")

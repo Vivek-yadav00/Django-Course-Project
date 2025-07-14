@@ -12,37 +12,62 @@
     <!-- Custom Global Styles -->
     <style>
         body {
-            background-color: #f0f2f5;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+        background-color: #f0f2f5;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
         }
 
         .btn-yellow {
-            background-color: #FFD700;
-            color: white;
-            font-weight: 600;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+        background-color: #FFD700;
+        color: white;
+        font-weight: 600;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
         }
 
         .btn-yellow:hover {
-            background-color: #e6c200;
+        background-color: #e6c200;
         }
 
         .alert {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            margin-bottom: 1rem;
-            border-radius: 5px;
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        margin-bottom: 1rem;
+        border-radius: 5px;
         }
-    </style>
 
-    {% block extra_head %}{% endblock %}
+        .message-box {
+        max-width: 60%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        word-wrap: break-word;
+        }
+
+        .message-left {
+        background-color: #f1f0f0;
+        text-align: left;
+        align-self: flex-start;
+        }
+
+        .message-right {
+        background-color: #d1e7dd;
+        text-align: right;
+        align-self: flex-end;
+        }
+
+        .msg-info {
+        font-size: 0.75rem;
+        color: #555;
+        margin-top: 5px;
+        }
+        </style>
+
+        {% block extra_head %}{% endblock %}
 </head>
 
 <body>
